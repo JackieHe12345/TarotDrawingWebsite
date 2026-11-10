@@ -2,251 +2,65 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>塔罗牌自动抽牌（1–10 张）</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #121212;
-      color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .app {
-      width: 90%;
-      max-width: 800px;
-      background: #1f1f1f;
-      border-radius: 20px;
-      padding: 24px 28px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
-    }
-
-    h1 {
-      margin-top: 0;
-      font-size: 24px;
-      text-align: center;
-      letter-spacing: 0.08em;
-    }
-
-    .subtitle {
-      text-align: center;
-      font-size: 14px;
-      color: #bbbbbb;
-      margin-bottom: 20px;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 18px;
-    }
-
-    .input-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: #dddddd;
-    }
-
-    input[type="number"] {
-      width: 70px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #444;
-      background: #2a2a2a;
-      color: #f5f5f5;
-      outline: none;
-      text-align: center;
-    }
-
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 8px 18px;
-      font-size: 14px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #6a5acd, #b57cff);
-      color: white;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.6);
-      opacity: 0.95;
-    }
-
-    button:active {
-      transform: translateY(0);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-      opacity: 0.9;
-    }
-
-    /* 清零按钮风格（略区别一点） */
-    .reset-btn {
-      background: linear-gradient(135deg, #444, #777);
-    }
-
-    .result-area {
-      margin-top: 10px;
-      border-top: 1px solid #333;
-      padding-top: 16px;
-    }
-
-    .notice {
-      font-size: 13px;
-      color: #aaaaaa;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .card-line {
-      font-size: 14px;
-      color: #f5f5f5;
-      line-height: 1.5;
-    }
-
-    .card-index {
-      color: #bbbbbb;
-      margin-right: 4px;
-    }
-
-    .timestamp {
-      margin-top: 10px;
-      font-size: 11px;
-      text-align: right;
-      color: #777;
-    }
-
-    .error {
-      color: #ff8a80;
-      font-size: 13px;
-      text-align: center;
-      margin-bottom: 6px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#17141f" />
+  <meta name="description" content="快速抽取一张或三张塔罗牌，也可自选 1–10 张。查看每张牌对应的正逆位关键词与解读。" />
+  <title>塔罗牌自动抽牌 · 此刻的指引</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="tarot-data.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="app">
-    <h1>塔罗牌自动抽牌</h1>
-    <div class="subtitle">支持一次抽 1–10 张牌 · 随机正位/逆位</div>
-
-    <div class="controls">
-      <div class="input-group">
-        <span>抽取张数：</span>
-        <input id="cardCount" type="number" min="1" max="10" value="3" />
-        <span>（1–10）</span>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-star" viewBox="0 0 40 40"><path d="m20 3 4.5 12.5L37 20l-12.5 4.5L20 37l-4.5-12.5L3 20l12.5-4.5Z"/><circle cx="20" cy="20" r="4"/></symbol>
+    <symbol id="icon-wand" viewBox="0 0 40 40"><path d="m11 33 18-26M15 27l-6-6m15-7 7 1M20 20l-2-9M27 8l4-2-1 5"/></symbol>
+    <symbol id="icon-cup" viewBox="0 0 40 40"><path d="M10 7h20v9a10 10 0 0 1-20 0ZM20 26v8m-7 0h14M10 10H5v6a6 6 0 0 0 7 6m18-12h5v6a6 6 0 0 1-7 6"/></symbol>
+    <symbol id="icon-sword" viewBox="0 0 40 40"><path d="M20 3 15 12v14h10V12ZM20 9v17M10 26h20M20 26v10m-4 0h8"/></symbol>
+    <symbol id="icon-coin" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="m20 9 3 8h9l-7 5 3 9-8-6-8 6 3-9-7-5h9Z"/></symbol>
+  </svg>
+  <main class="app">
+    <header class="header">
+      <div class="brand"><svg aria-hidden="true"><use href="#icon-star"/></svg><span>TAROT <span class="brand-divider">/</span> 此刻的指引</span></div>
+      <h1>塔罗牌自动抽牌</h1>
+      <p class="subtitle">静下心，想一个问题。<br class="mobile-break" />给此刻留一点新的启发。</p>
+    </header>
+    <section class="draw-panel" aria-label="选择抽牌方式">
+      <div class="section-caption"><span>从一张牌开始</span><span class="caption-star" aria-hidden="true">✦</span></div>
+      <div class="quick-actions">
+        <button type="button" class="quick-draw" id="quickOne" aria-label="快速抽 1 张">
+          <span class="mini-deck single" aria-hidden="true"><span>✦</span></span>
+          <span class="quick-copy"><strong>快速抽 1 张</strong><span>一个当下的灵感</span></span>
+          <span class="quick-arrow" aria-hidden="true">↗</span>
+        </button>
+        <button type="button" class="quick-draw" id="quickThree" aria-label="快速抽 3 张">
+          <span class="mini-deck triple" aria-hidden="true"><span></span><span>✦</span><span></span></span>
+          <span class="quick-copy"><strong>快速抽 3 张</strong><span>多一点思考的角度</span></span>
+          <span class="quick-arrow" aria-hidden="true">↗</span>
+        </button>
       </div>
-      <button id="drawBtn">开始抽牌</button>
-      <button id="clearBtn" class="reset-btn">清零</button>
-    </div>
-
-    <div id="errorMsg" class="error" style="display:none;"></div>
-
-    <div class="result-area">
-      <div class="notice" id="noticeText">
-        输入想抽的张数（1–10），然后点击「开始抽牌」。
+      <details class="custom-draw">
+        <summary><span>自选抽牌张数</span><span class="custom-range">1–10 张 <span aria-hidden="true">＋</span></span></summary>
+        <form id="drawForm" novalidate>
+          <div class="input-group"><label for="cardCount">抽取张数</label><input id="cardCount" name="cardCount" type="number" inputmode="numeric" min="1" max="10" step="1" value="3" required aria-describedby="countHint errorMsg" /><span id="countHint">1–10 张</span></div>
+          <button type="submit" id="drawBtn" class="primary-btn">开始抽牌 <span aria-hidden="true">→</span></button>
+        </form>
+      </details>
+      <p id="errorMsg" class="error" role="alert" hidden></p>
+      <p class="deck-note">78 张完整牌组<span>·</span>每次不重复<span>·</span>随机正逆位</p>
+    </section>
+    <section class="result-area" id="results" aria-labelledby="resultHeading" tabindex="-1">
+      <div class="result-header"><h2 id="resultHeading">你的牌面</h2><button type="button" id="clearBtn" class="text-btn" hidden>清空结果</button></div>
+      <p class="notice" id="noticeText" role="status" aria-live="polite" aria-atomic="true">选择一种抽牌方式，看看此刻的启发。</p>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-cards" aria-hidden="true"><span></span><span><svg><use href="#icon-star"/></svg></span><span></span></div>
+        <p>答案，从你的第一张牌开始</p>
+        <span>抽牌后，在这里阅读每张牌的正逆位含义</span>
       </div>
       <div class="cards" id="cardsContainer"></div>
-      <div class="timestamp" id="timestamp"></div>
-    </div>
-  </div>
-
-  <script>
-    const cardNames = [
-      "愚人", "魔术师", "女祭司", "皇后", "皇帝", "教皇", "恋人", "战车", "力量", "隐者",
-      "命运之轮", "正义", "倒吊人", "死神", "节制", "恶魔", "塔", "星星", "月亮", "太阳",
-      "审判", "世界",
-      "权杖王牌", "权杖二", "权杖三", "权杖四", "权杖五", "权杖六", "权杖七", "权杖八",
-      "权杖九", "权杖十", "权杖侍从", "权杖骑士", "权杖皇后", "权杖国王",
-      "圣杯王牌", "圣杯二", "圣杯三", "圣杯四", "圣杯五", "圣杯六", "圣杯七", "圣杯八",
-      "圣杯九", "圣杯十", "圣杯侍从", "圣杯骑士", "圣杯皇后", "圣杯国王",
-      "宝剑王牌", "宝剑二", "宝剑三", "宝剑四", "宝剑五", "宝剑六", "宝剑七", "宝剑八",
-      "宝剑九", "宝剑十", "宝剑侍从", "宝剑骑士", "宝剑皇后", "宝剑国王",
-      "星币王牌", "星币二", "星币三", "星币四", "星币五", "星币六", "星币七", "星币八",
-      "星币九", "星币十", "星币侍从", "星币骑士", "星币皇后", "星币国王"
-    ];
-
-    function drawCards(n) {
-      const deck = Array.from({ length: 78 }, (_, i) => i);
-      const result = [];
-
-      for (let i = 0; i < n; i++) {
-        const randomIndex = Math.floor(Math.random() * deck.length);
-        const cardIndex = deck[randomIndex];
-        deck.splice(randomIndex, 1);
-
-        const orientation = Math.random() < 0.5 ? "正位" : "逆位";
-        result.push({ name: cardNames[cardIndex], orientation });
-      }
-      return result;
-    }
-
-    const drawBtn = document.getElementById("drawBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const cardCountInput = document.getElementById("cardCount");
-    const cardsContainer = document.getElementById("cardsContainer");
-    const timestampEl = document.getElementById("timestamp");
-    const noticeText = document.getElementById("noticeText");
-    const errorMsg = document.getElementById("errorMsg");
-
-    drawBtn.addEventListener("click", () => {
-      let n = parseInt(cardCountInput.value, 10);
-
-      if (isNaN(n) || n < 1 || n > 10) {
-        errorMsg.style.display = "block";
-        errorMsg.textContent = "请输入 1 到 10 之间的整数。";
-        cardsContainer.innerHTML = "";
-        timestampEl.textContent = "";
-        noticeText.textContent = "请先输入合法的张数，再点击「开始抽牌」。";
-        return;
-      } else {
-        errorMsg.style.display = "none";
-      }
-
-      const drawn = drawCards(n);
-
-      cardsContainer.innerHTML = "";
-      drawn.forEach((card, index) => {
-        const line = document.createElement("div");
-        line.className = "card-line";
-        line.innerHTML = `
-          <span class="card-index">第 ${index + 1} 张：</span>
-          ${card.name}（${card.orientation}）
-        `;
-        cardsContainer.appendChild(line);
-      });
-
-      const now = new Date();
-      timestampEl.textContent = `抽牌时间：${now.toLocaleString("zh-CN")}`;
-
-      noticeText.textContent = `你抽到了 ${n} 张牌`;
-    });
-
-    // ===== 清零按钮逻辑 =====
-    clearBtn.addEventListener("click", () => {
-      cardsContainer.innerHTML = "";
-      timestampEl.textContent = "";
-      errorMsg.style.display = "none";
-      noticeText.textContent = "输入想抽的张数（1–10），然后点击「开始抽牌」。";
-    });
-  </script>
+      <div class="result-footer" id="resultFooter" hidden><p class="timestamp" id="timestamp"></p><button type="button" id="redrawBtn" class="secondary-btn">再抽一次 <span aria-hidden="true">↻</span></button></div>
+    </section>
+    <footer class="page-footer"><span aria-hidden="true">✦</span> 留一点时间，听听自己的想法 <span aria-hidden="true">✦</span></footer>
+    <noscript><p class="error">请启用浏览器的 JavaScript 后使用抽牌功能。</p></noscript>
+  </main>
 </body>
 </html>
